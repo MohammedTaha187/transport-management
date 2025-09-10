@@ -74,7 +74,6 @@ class CompanyResource extends Resource
         ];
     }
 
-    // Test helper: return a serializable representation of the form/table fields
     public static function testableSchema(): array
     {
         return [

@@ -132,7 +132,7 @@ class TripResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->with(['driver', 'vehicle', 'company']); // eager loading
+            ->with(['driver', 'vehicle', 'company']); 
     }
 
     public static function testableSchema(): array
