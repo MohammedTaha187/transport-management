@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 
 class DashboardStats extends BaseWidget
 {
-    protected function getStats(): array
+    public function getStats(): array
     {
         return [
             Stat::make('Active Trips Now', Cache::remember('active_trips', 300, function () {

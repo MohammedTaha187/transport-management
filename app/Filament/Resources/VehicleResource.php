@@ -35,7 +35,7 @@ class VehicleResource extends Resource
 
                 Forms\Components\TextInput::make('model')
                     ->required()
-                    ->maxLength(255),                   
+                    ->maxLength(255),
             ]);
     }
 
@@ -82,6 +82,14 @@ class VehicleResource extends Resource
             'index' => Pages\ListVehicles::route('/'),
             'create' => Pages\CreateVehicle::route('/create'),
             'edit' => Pages\EditVehicle::route('/{record}/edit'),
+        ];
+    }
+
+    public static function testableSchema(): array
+    {
+        return [
+            'form' => ['model', 'plate_number', 'company_id'],
+            'table' => ['id', 'plate_number', 'model', 'company.name'],
         ];
     }
 }

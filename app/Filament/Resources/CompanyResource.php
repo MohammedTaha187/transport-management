@@ -15,7 +15,7 @@ class CompanyResource extends Resource
     protected static ?string $model = Company::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
-    protected static ?string $navigationGroup = 'Management'; 
+    protected static ?string $navigationGroup = 'Management';
 
     public static function form(Form $form): Form
     {
@@ -63,7 +63,7 @@ class CompanyResource extends Resource
             ]);
     }
 
-    
+
 
     public static function getPages(): array
     {
@@ -71,6 +71,15 @@ class CompanyResource extends Resource
             'index' => Pages\ListCompanies::route('/'),
             'create' => Pages\CreateCompany::route('/create'),
             'edit' => Pages\EditCompany::route('/{record}/edit'),
+        ];
+    }
+
+    // Test helper: return a serializable representation of the form/table fields
+    public static function testableSchema(): array
+    {
+        return [
+            'form' => ['name'],
+            'table' => ['id', 'name', 'created_at', 'updated_at'],
         ];
     }
 }

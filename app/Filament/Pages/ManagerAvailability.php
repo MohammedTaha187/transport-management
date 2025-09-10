@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Pages;
 
 use App\Models\Driver;
@@ -25,11 +26,17 @@ class ManagerAvailability extends Page
 
     public function getAvailableDrivers()
     {
-        if (!$this->start_time || !$this->end_time) return [];
+        if (!$this->start_time || !$this->end_time) {
+            return [];
+        }
 
         $busyDrivers = Trip::where(function ($query) {
             $query->whereBetween('start_time', [$this->start_time, $this->end_time])
-                  ->orWhereBetween('end_time', [$this->start_time, $this->end_time]);
+                  ->orWhereBetween('end_time', [$this->start_time, $this->end_time])
+                  ->orWhere(function ($q2) {
+                      $q2->where('start_time', '<=', $this->start_time)
+                         ->where('end_time', '>=', $this->end_time);
+                  });
         })->pluck('driver_id');
 
         return Driver::whereNotIn('id', $busyDrivers)->get();
@@ -37,11 +44,17 @@ class ManagerAvailability extends Page
 
     public function getAvailableVehicles()
     {
-        if (!$this->start_time || !$this->end_time) return [];
+        if (!$this->start_time || !$this->end_time) {
+            return [];
+        }
 
         $busyVehicles = Trip::where(function ($query) {
             $query->whereBetween('start_time', [$this->start_time, $this->end_time])
-                  ->orWhereBetween('end_time', [$this->start_time, $this->end_time]);
+                  ->orWhereBetween('end_time', [$this->start_time, $this->end_time])
+                  ->orWhere(function ($q2) {
+                      $q2->where('start_time', '<=', $this->start_time)
+                         ->where('end_time', '>=', $this->end_time);
+                  });
         })->pluck('vehicle_id');
 
         return Vehicle::whereNotIn('id', $busyVehicles)->get();

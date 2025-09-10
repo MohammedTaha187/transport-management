@@ -91,4 +91,12 @@ class DriverResource extends Resource
             'edit' => Pages\EditDriver::route('/{record}/edit'),
         ];
     }
+
+    public static function testableSchema(): array
+    {
+        return [
+            'form' => ['name', 'company_id', 'license_number'],
+            'table' => ['id', 'name', 'company.name', 'created_at'],
+        ];
+    }
 }

@@ -11,7 +11,6 @@ use Filament\Resources\Resource;
 use App\Filament\Resources\TripResource\Pages;
 use Illuminate\Database\Eloquent\Builder;
 
-
 class TripResource extends Resource
 {
     protected static ?string $model = Trip::class;
@@ -19,50 +18,50 @@ class TripResource extends Resource
     protected static ?string $navigationGroup = 'Management';
 
     public static function form(Form $form): Form
-{
-    return $form
-        ->schema([
-            Forms\Components\Select::make('company_id')
-                ->relationship('company', 'name')
-                ->required(),
+    {
+        return $form
+            ->schema([
+                Forms\Components\Select::make('company_id')
+                    ->relationship('company', 'name')
+                    ->required(),
 
-            Forms\Components\Select::make('driver_id')
-                ->relationship('driver', 'name')
-                ->required(),
+                Forms\Components\Select::make('driver_id')
+                    ->relationship('driver', 'name')
+                    ->required(),
 
-            Forms\Components\Select::make('vehicle_id')
-                ->relationship('vehicle', 'plate_number')
-                ->required(),
+                Forms\Components\Select::make('vehicle_id')
+                    ->relationship('vehicle', 'plate_number')
+                    ->required(),
 
-            Forms\Components\DateTimePicker::make('start_time')
-                ->required(),
+                Forms\Components\DateTimePicker::make('start_time')
+                    ->required(),
 
-            Forms\Components\DateTimePicker::make('end_time')
-                ->required()
-                ->after('start_time')
-                ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                    $driverId = $get('driver_id');
-                    $vehicleId = $get('vehicle_id');
-                    $start = $get('start_time');
-                    $end = $state;
+                Forms\Components\DateTimePicker::make('end_time')
+                    ->required()
+                    ->after('start_time')
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $driverId = $get('driver_id');
+                        $vehicleId = $get('vehicle_id');
+                        $start = $get('start_time');
+                        $end = $state;
 
-                    if (TripResource::hasOverlap('driver_id', $driverId, $start, $end, $get('id') ?? null)) {
-                        throw \Filament\Forms\ValidationException::withMessages([
-                            'end_time' => "This driver already has a trip that overlaps with the selected time."
-                        ]);
-                    }
+                        if (TripResource::hasOverlap('driver_id', $driverId, $start, $end, $get('id') ?? null)) {
+                            throw \Filament\Forms\ValidationException::withMessages([
+                                'end_time' => "This driver already has a trip that overlaps with the selected time."
+                            ]);
+                        }
 
-                    if (TripResource::hasOverlap('vehicle_id', $vehicleId, $start, $end, $get('id') ?? null)) {
-                        throw \Filament\Forms\ValidationException::withMessages([
-                            'end_time' => "This vehicle is already booked for another trip during the selected time."
-                        ]);
-                    }
-                }),
-        ]);
-}
+                        if (TripResource::hasOverlap('vehicle_id', $vehicleId, $start, $end, $get('id') ?? null)) {
+                            throw \Filament\Forms\ValidationException::withMessages([
+                                'end_time' => "This vehicle is already booked for another trip during the selected time."
+                            ]);
+                        }
+                    }),
+            ]);
+    }
 
 
-    protected static function hasOverlap($field, $value, $start, $end, $ignoreId = null)
+    public static function hasOverlap($field, $value, $start, $end, $ignoreId = null)
     {
         $query = Trip::where($field, $value)
             ->where(function ($q) use ($start, $end) {
@@ -122,18 +121,26 @@ class TripResource extends Resource
     }
 
     public static function getPages(): array
-{
-    return [
-        'index' => Pages\ListTrips::route('/'),
-        'create' => Pages\CreateTrip::route('/create'),
-        'edit' => Pages\EditTrip::route('/{record}/edit'),
-    ];
-}
+    {
+        return [
+            'index' => Pages\ListTrips::route('/'),
+            'create' => Pages\CreateTrip::route('/create'),
+            'edit' => Pages\EditTrip::route('/{record}/edit'),
+        ];
+    }
 
-public static function getEloquentQuery(): Builder
-{
-    return parent::getEloquentQuery()
-        ->with(['driver', 'vehicle', 'company']); // eager loading
-}
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['driver', 'vehicle', 'company']); // eager loading
+    }
+
+    public static function testableSchema(): array
+    {
+        return [
+            'form' => ['company_id', 'driver_id', 'vehicle_id', 'start_time', 'end_time'],
+            'table' => ['id', 'vehicle.plate_number', 'driver.name', 'start_time', 'end_time', 'status'],
+        ];
+    }
 
 }
