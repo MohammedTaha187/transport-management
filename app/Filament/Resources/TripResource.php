@@ -9,6 +9,8 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Filament\Resources\TripResource\Pages;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class TripResource extends Resource
 {
@@ -120,11 +122,18 @@ class TripResource extends Resource
     }
 
     public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListTrips::route('/'),
-            'create' => Pages\CreateTrip::route('/create'),
-            'edit' => Pages\EditTrip::route('/{record}/edit'),
-        ];
-    }
+{
+    return [
+        'index' => Pages\ListTrips::route('/'),
+        'create' => Pages\CreateTrip::route('/create'),
+        'edit' => Pages\EditTrip::route('/{record}/edit'),
+    ];
+}
+
+public static function getEloquentQuery(): Builder
+{
+    return parent::getEloquentQuery()
+        ->with(['driver', 'vehicle', 'company']); // eager loading
+}
+
 }
