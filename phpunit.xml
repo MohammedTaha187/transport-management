@@ -14,8 +14,16 @@
     </testsuites>
     <source>
         <include>
-            <directory>app</directory>
+            <directory>app/Models</directory>
+            <directory>app/Observers</directory>
+            <directory>app/Filament/Widgets</directory>
+            <directory>app/Filament/Pages</directory>
+            <directory>app/Providers</directory>
         </include>
+        <exclude>
+            <!-- Filament resource classes are view/schema definitions; exclude from coverage measurement -->
+            <directory>app/Filament/Resources</directory>
+        </exclude>
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -16,8 +15,8 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->foreignId('vehicle_id')->constrained()->onDelete('cascade');
             $table->foreignId('driver_id')->constrained()->onDelete('cascade');
-            $table->date('start_time');
-            $table->date('end_time');
+            $table->dateTime('start_time');
+            $table->dateTime('end_time');
             $table->enum('status', ['active', 'completed', 'canceled'])->default('active');
             $table->timestamps();
         });

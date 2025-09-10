@@ -1,66 +1,165 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Transport Management — README
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+ملف README هذا يشرح كيفية تشغيل المشروع محلياً، وما تم اتخاذه من قرارات تصميمية مهمة مع تبريرات فنية مفصلة (مناسب لتسليم عمل مقابلة).
 
-## About Laravel
+## خطوات تشغيل المشروع (محلي)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. استنساخ الريبو
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```bash
+# باستخدام HTTPS
+git clone https://github.com/MohammedTaha187/transport-management.git
+# أو باستخدام SSH
+git clone git@github.com:MohammedTaha187/transport-management.git
+cd transport-management
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. تثبيت الاعتمادات
 
-## Learning Laravel
+```bash
+composer install
+npm install # موجود في المشروع إذا أردت تشغيل واجهة JS/CSS
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. إعداد ملف البيئة
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+انسخ `.env.example` إلى `.env` وعرّف إعدادات قاعدة البيانات وبيانات البريد وما إلى ذلك. ثم أنشئ مفتاح التطبيق:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Laravel Sponsors
+4. تشغيل الهجرات والـ Seeders
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+php artisan migrate --seed
+```
 
-### Premium Partners
+الـ seeder يُنشئ (ضمن أمثلة المشروع الحالي):
+- مستخدم اختبار `test@example.com` (password: `password`)
+- مستخدم Filament Admin: `admin@example.com` (password: `12345678`)
+- 2 شركات (companies) + 10 سائقين + 10 مركبات + 20 رحلات (حسب احتياج المهمة)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+5. تشغيل الخادم محلياً
 
-## Contributing
+```bash
+php artisan serve
+# ثم افتح http://127.0.0.1:8000
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ملاحظات حول الفيلامِنت (Filament)
 
-## Code of Conduct
+- لوحة Filament متوقفة على نموذج المستخدم `App\\Models\\User`، حساب Filament الإداري الذي أضفته هو `admin@example.com`.
+- إن كنت تستخدم صلاحيات إضافية أو جدول مستخدمين خاص Filament، فاعدِل السيِدر ليتوافق مع تلك البنية.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## شرح قرارات تصميمية مفصّلة (للتسليم في مقابلة)
+أدناه تفسيرات معمقة للقرارات الرئيسية التي اتخذت أثناء بناء هذا المشروع.
 
-## Security Vulnerabilities
+### 1) تعريف ومعالجة "Overlapping" للرحلات
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- تعريف عملي: حدث تداخل (Overlapping) عندما توجد رحلتان تنتميان إلى نفس مورد محدود (مثل نفس السائق أو نفس المركبة) حيث تتقاطع فترات الوقت (start_time..end_time).
 
-## License
+- قاعدة التداخل (المنطقية): رحلتان A و B تتداخلان إذا:
+  - A.start_time <= B.end_time && A.end_time >= B.start_time
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- كيف يُنَفَّذ عادة:
+  - على مستوى التطبيق (Controller / Service): قبل حجز/إنشاء رحلة جديدة نستعلم عن رحلات حالية لذلك السائق/المركبة خلال النطاق الزمني المطلوب، باستخدام شرط التداخل أعلاه.
+  - مثال استعلام Eloquent:
+
+```php
+$overlap = Trip::where('vehicle_id', $vehicleId)
+    ->where(function($q) use ($start, $end) {
+        $q->whereBetween('start_time', [$start, $end])
+          ->orWhereBetween('end_time', [$start, $end])
+          ->orWhere(function($q2) use($start, $end){
+              $q2->where('start_time', '<=', $start)
+                 ->where('end_time', '>=', $end);
+          });
+    })->exists();
+
+if ($overlap) {
+    // رفض أو إعلام المستخدم
+}
+```
+
+- لماذا هذا التعريف؟ لأن التحقق هكذا يكتشف أي تراكب جزئي أو كلي للفترات الزمنية.
+
+- تحسينات لاحقة ممكنة:
+  - قفل تنافسي (DB row lock) عند الحجز لمنع حالات السباق (race conditions) في بيئات الطلب العالي.
+  - فهرس على الحقول الزمنية أو استخدام جدول فترات (range type) في قواعد بيانات تدعم ذلك (مثل PostgreSQL) لتحسين الأداء.
+
+### 2) لماذا استخدمت (أو أوصيت باستخدام) Cache للـ KPIs
+
+- حالات الاستخدام: لو كنت تعرض مؤشرات أداء (KPIs) مثل: عدد الرحلات اليومية، نسبة الاكتمال، متوسط مدة الرحلة... هذه القيم قد تُستعلم كثيراً من الواجهة/لوحة المشرف.
+
+- أسباب استخدام Cache:
+  - تقليل الحمل على قاعدة البيانات (تخفيف استعلامات aggregation الثقيلة مثل COUNT/GROUP BY على جداول كبيرة).
+  - تحسين زمن الاستجابة للوحة المشرف وواجهات API التي تُظهر هذه القيم.
+
+- استراتيجية مقترحة:
+  - احسب المؤشرات الدورية (مثلاً كل 30 ثانية أو 1 دقيقة) وخزنها في الكاش (Redis) مع TTL مناسب.
+  - عند تعديلات حرجة تؤثر على KPI، نفذ عملية إبطال (invalidate) أو تحديث جزئي (incremental update) من خلال event listeners على نماذج `Trip/Vehicle/Driver` (مثل استخدام Model events: created/updated/deleted).
+  - استخدم Cache Tags إن كانت البنية تسمح (مثلاً Laravel cache tags مع Redis) ليسهل إبطال مجموعة من المفاتيح.
+
+- أمثلة تقنية (Laravel):
+```php
+$kpi = Cache::remember('kpi.trips.per_day', 60, function(){
+    return Trip::whereDate('start_time', today())->count();
+});
+```
+
+- متى لا تستخدم الكاش؟
+  - إذا كان حجم البيانات صغير جداً والاستعلامات خفيفة، فالكاش قد يضيف تعقيداً لا داعي له.
+
+### 3) Factories و Seeders
+
+- لماذا كتبت Factories لكل نموذج؟
+  - لتسهيل إنشاء بيانات اختبارية واقعية بسرعة أثناء التطوير والاختبارات الآلية.
+  - فصل مسؤولية إنشاء البيانات عن منطق السيِدر.
+
+- ملاحظة حول العلاقات: تجنبت جعل الـ factories تنشئ دائماً شركات جديدة عشوائياً عند إنشاء كل Trip لأن ذلك يؤدي لزيادة عدد الشركات عند استخدام الـ factories في السيِدر؛ بدلاً من ذلك في السيِدر الرئيسي ننشئ شركات أولاً ونربط السائقين والمركبات بها صراحة ثم ننشئ الرحلات باستخدام تلك الكيانات لضمان توزيع متوقع.
+
+### 4) حماية الحقول والـ Casting
+
+- الحقول الحيوية (مثل `password`) مُعرَّفة كـ `hashed` في `User` model casts لذلك عند التمهيد في الـ seeder يمكن تمرير كلمة مرور نصية وسيتم تجزئتها تلقائياً.
+
+### 5) الاعتبارات الأمنية والبيئية
+
+- لا تضع بيانات حساسة (مثل كلمات مرور حقيقية أو مفاتيح خارجية) في الملف `.env.example` عند تسليم المشروع.
+- تأكد من إعداد `APP_KEY` وبيانات الاتصال بقاعدة البيانات بشكل آمن قبل النشر.
+
+## نصائح تشغيل وإختبار سريعة
+
+- لتشغيل كل شيء نظيفاً محلياً:
+
+```bash
+php artisan migrate:fresh --seed
+php artisan serve
+```
+
+- لتفريغ الكاش:
+
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+```
+
+- إن أردت فحص البيانات المولّدة سريعاً:
+
+```bash
+php artisan tinker --execute "App\\Models\\Company::count(); App\\Models\\Trip::count();"
+```
+
+## ملاحظات وإفتراضات
+
+- بعض القرارات تم توضيحها بشكل مفصّل هنا استناداً إلى أفضل ممارسات معمّمة؛ إذا تبيّن أن هناك متطلبات خاصة في المشروع (مثل منطق دقيق للتداخل أو تكوينات Filament مخصصة)، أعدّل README أو الكود ليتناسب مع تلك المتطلبات.
+- إن رغبت أطبّق تحسينات إضافية مثل:
+  - منع تداخل الرحلات على مستوى DB (قفل/transaction أو قيود متقدمة)،
+  - إضافة Jobs/Queue لحساب KPIs بشكل دوري وتخزينها في Cache،
+  - توثيق API endpoints أو إضافة Postman collection.
+
+---
+
+إن أردت أي تغيير في نص README أو ترجمة أجزاء إلى الإنجليزية أو إضافة شروحات تقنية أكثر تفصيلاً (رسومات زمنية توضيحية أو استعلامات SQL فعلية) أطبّقها الآن.

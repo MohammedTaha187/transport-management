@@ -42,7 +42,10 @@ class ResourceSchemaTest extends TestCase
             'status' => 'active',
         ]);
 
-        $t2 = Trip::create([
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Driver is already booked');
+
+        Trip::create([
             'company_id' => $company->id,
             'driver_id' => $driver->id,
             'vehicle_id' => $vehicle->id,
@@ -51,8 +54,6 @@ class ResourceSchemaTest extends TestCase
             'status' => 'active',
         ]);
 
-        // The current implementation uses inclusive whereBetween, so back-to-back times are considered overlapping
         $this->assertTrue(TripResource::hasOverlap('driver_id', $driver->id, '2025-09-10', '2025-09-11', $t1->id));
-        $this->assertTrue(TripResource::hasOverlap('driver_id', $driver->id, '2025-09-11', '2025-09-12', $t2->id));
     }
 }

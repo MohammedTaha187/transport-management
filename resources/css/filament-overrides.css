@@ -1,0 +1,37 @@
+/* Filament small theme tweaks */
+:root {
+    --fi-accent: #0ea5a0; /* teal */
+    --fi-accent-700: #0f766e;
+    --fi-accent-contrast: #ffffff;
+}
+
+/* Topbar / navbar */
+.filament-topbar,
+.filament-panel__topbar,
+.filament-panels-topbar,
+.fi-topbar {
+    background-color: var(--fi-accent) !important;
+    color: var(--fi-accent-contrast) !important;
+}
+
+/* Page / form headers */
+.filament-page-header,
+.filament-header,
+.fi-header,
+.filament-page__header,
+.filament-forms-section__heading {
+    background-color: var(--fi-accent-700) !important;
+    color: var(--fi-accent-contrast) !important;
+}
+
+/* Ensure topbar controls remain readable */
+.filament-topbar a,
+.filament-topbar button,
+.filament-topbar .filament-breadcrumbs,
+.filament-topbar .filament-global-search {
+    color: var(--fi-accent-contrast) !important;
+}
+/* Small responsive tweaks */
+@media (max-width: 640px) {
+    /* reserved for future small-screen tweaks */
+}
